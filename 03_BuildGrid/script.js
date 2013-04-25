@@ -34,19 +34,53 @@
 var stage;
 var stageHeight = 480;
 var stageWidth = 800;
+var gameGrid;
+
+// define grid dimensions
+var gridWidth = 13;
+var gridHeight = 13;
+// define offset position
+var gridOffsetX = 192;
+var gridOffsetY = 32;
+// define size of tiles
+var tileHeight = 32;
+var tileWidth = 32;
 
 function init() {
     // attach canvas to stage
     stage = new createjs.Stage("createJSCanvas");
 
-    // create new shape
-    var shape = new createjs.Shape();
-    shape.graphics.beginFill("red").drawCircle(0, 0, 50);
-    shape.x = 100;
-    shape.y = 100;
+    // create the game grid
+    buildGameGrid();
+}
 
-    // add shape to display list
-    stage.addChild(shape);
+function buildGameGrid() {
+    // create grid object
+    gameGrid = [];
+
+    // create two step loop to create game grid
+    // start with building a row
+    for (var y = 0; y < gridHeight; y++) {
+        gameGrid[y] = []; // set game grid row to contain columns
+        // create columns
+        for (var x = 0; x < gridWidth; x++) {
+            // create new tile shape
+            var tile = new createjs.Shape();
+            // draw tile based on tile size variables
+            tile.graphics.beginFill("rgba(255,0,0,1)").drawRect(0, 0, tileWidth, tileHeight);
+            // position based on tile and offset
+            tile.x = gridOffsetX + (x * tileWidth);
+            tile.y = gridOffsetY + (y * tileHeight);
+
+            // assign tile to the game grid for accessing later on
+            gameGrid[y][x] = tile;
+            // add to the stage
+            stage.addChild(tile);
+        }
+    }
+
+    // find the center tile and color green
+    gameGrid[6][6].graphics.beginFill("rgba(0,255,0,1)").drawRect(0, 0, tileWidth, tileHeight);
 
     // render stage
     stage.update();

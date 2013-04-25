@@ -34,19 +34,73 @@
 var stage;
 var stageHeight = 480;
 var stageWidth = 800;
+var gameGrid;
+
+// define grid dimensions
+var gridWidth = 13;
+var gridHeight = 13;
+// define offset position
+var gridOffsetX = 192;
+var gridOffsetY = 32;
+// define size of tiles
+var tileHeight = 32;
+var tileWidth = 32;
+
+// define assets
+var img;
+var spriteData;
+var spriteSheet;
 
 function init() {
     // attach canvas to stage
     stage = new createjs.Stage("createJSCanvas");
 
-    // create new shape
-    var shape = new createjs.Shape();
-    shape.graphics.beginFill("red").drawCircle(0, 0, 50);
-    shape.x = 100;
-    shape.y = 100;
+    // create the game grid
+    buildGameGrid();
+}
 
-    // add shape to display list
-    stage.addChild(shape);
+function buildGameGrid() {
+    // create grid object
+    gameGrid = [];
+
+    // create a new image object and load the sprite sheet
+    img = new Image();
+    img.src = "images/avatarSprites.png";
+    // create a file loader event to fire when the sprite sheet is loaded
+    img.onload = drawGrid;
+    
+}
+
+function drawGrid() {
+    // create sprite sheet
+    spriteData = {
+        images: [img],
+        frames: { width: 32, height: 32 },
+        animations: {
+            grass: 4 
+        }
+    }
+    spriteSheet = new createjs.SpriteSheet(spriteData);
+           
+    // create two step loop to create game grid
+    // start with building a row
+    for (var y = 0; y < gridHeight; y++) {
+        gameGrid[y] = []; // set game grid row to contain colums
+        // create columns
+        for (var x = 0; x < gridWidth; x++) {
+            var tile = new createjs.BitmapAnimation(spriteSheet);
+            tile.gotoAndStop("grass");
+
+            // position based on tile and offset
+            tile.x = gridOffsetX + (x * tileWidth);
+            tile.y = gridOffsetY + (y * tileHeight);
+
+            // assign tile to game grid for accessing later
+            gameGrid[y][x] = tile;
+            // add to the stage
+            stage.addChild(tile);
+        }
+    }
 
     // render stage
     stage.update();
